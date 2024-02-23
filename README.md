@@ -36,3 +36,6 @@ sh scripts/emlc_r50_deeplabv2.sh
 The visualization reults will be saved in emlc_r50_deeplabv2, and the quantity results will be saved in the ```.txt``` file.
 ### Demo
 Open the ```demo.ipynb``` with jupyter notebook, and follow the commands.
+
+### Thanks
+This repo is inspired by [URSS](https://github.com/panzhiyi/URSS)
