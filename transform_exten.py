@@ -13,15 +13,15 @@ class Compose(object):
     def __init__(self, segtransform):
         self.segtransform = segtransform
 
-    def __call__(self, image, label,contour,scrib,cam):
+    def __call__(self, image, label,pseudolabel,distancemaps,distancemapc):
         for t in self.segtransform:
-            image, label, contour,scrib,cam = t(image, label, contour,scrib,cam)
-        return image, label, contour,scrib,cam
+            image, label, pseudolabel,distancemaps,distancemapc = t(image, label, pseudolabel,distancemaps,distancemapc)
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class ToTensor(object):
     # Converts numpy.ndarray (H x W x C) to a torch.FloatTensor of shape (C x H x W).
-    def __call__(self, image, label, contour,scrib,cam):
+    def __call__(self, image, label, pseudolabel,distancemaps,distancemapc):
         if not isinstance(image, np.ndarray) or not isinstance(label, np.ndarray):
             raise (RuntimeError("segtransform.ToTensor() only handle np.ndarray"
                                 "[eg: data readed by cv2.imread()].\n"))
@@ -38,16 +38,16 @@ class ToTensor(object):
         label = torch.from_numpy(label)
         if not isinstance(label, torch.LongTensor):
             label = label.long()
-        contour = torch.from_numpy(contour)
-        if not isinstance(contour, torch.LongTensor):
-            contour = contour.long()
-        scrib = torch.from_numpy(scrib)
-        if not isinstance(scrib, torch.LongTensor):
-            scrib = scrib.long()
-        cam = torch.from_numpy(cam)
-        if not isinstance(cam, torch.LongTensor):
-            cam = cam.long()
-        return image, label, contour,scrib,cam
+        pseudolabel = torch.from_numpy(pseudolabel)
+        if not isinstance(pseudolabel, torch.LongTensor):
+            pseudolabel = pseudolabel.long()
+        distancemaps = torch.from_numpy(distancemaps)
+        if not isinstance(distancemaps, torch.LongTensor):
+            distancemaps = distancemaps.long()
+        distancemapc = torch.from_numpy(distancemapc)
+        if not isinstance(distancemapc, torch.LongTensor):
+            distancemapc = distancemapc.long()
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class Normalize(object):
@@ -60,14 +60,14 @@ class Normalize(object):
         self.mean = mean
         self.std = std
 
-    def __call__(self, image, label, contour,scrib,cam):
+    def __call__(self, image, label, pseudolabel,distancemaps,distancemapc):
         if self.std is None:
             for t, m in zip(image, self.mean):
                 t.sub_(m)
         else:
             for t, m, s in zip(image, self.mean, self.std):
                 t.sub_(m).div_(s)
-        return image, label, contour,scrib,cam
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class Resize(object):
@@ -76,13 +76,13 @@ class Resize(object):
         assert (isinstance(size, collections.Iterable) and len(size) == 2)
         self.size = size
 
-    def __call__(self, image, label, contour,scrib,cam):
+    def __call__(self, image, label, pseudolabel,distancemaps,distancemapc):
         image = cv2.resize(image, self.size[::-1], interpolation=cv2.INTER_LINEAR)
         label = cv2.resize(label, self.size[::-1], interpolation=cv2.INTER_NEAREST)
-        contour = cv2.resize(contour, self.size[::-1], interpolation=cv2.INTER_NEAREST)
-        scrib = cv2.resize(scrib, self.size[::-1], interpolation=cv2.INTER_NEAREST)
-        cam = cv2.resize(cam, self.size[::-1], interpolation=cv2.INTER_NEAREST)
-        return image, label, contour,scrib,cam
+        pseudolabel = cv2.resize(pseudolabel, self.size[::-1], interpolation=cv2.INTER_NEAREST)
+        distancemaps = cv2.resize(distancemaps, self.size[::-1], interpolation=cv2.INTER_NEAREST)
+        distancemapc = cv2.resize(distancemapc, self.size[::-1], interpolation=cv2.INTER_NEAREST)
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class RandScale(object):
@@ -104,7 +104,7 @@ class RandScale(object):
         else:
             raise (RuntimeError("segtransform.RandScale() aspect_ratio param error.\n"))
 
-    def __call__(self, image, label, contour,scrib,cam):
+    def __call__(self, image, label, pseudolabel,distancemaps,distancemapc):
         temp_scale = self.scale[0] + (self.scale[1] - self.scale[0]) * random.random()
         temp_aspect_ratio = 1.0
         if self.aspect_ratio is not None:
@@ -114,10 +114,10 @@ class RandScale(object):
         scale_factor_y = temp_scale / temp_aspect_ratio
         image = cv2.resize(image, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_LINEAR)
         label = cv2.resize(label, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
-        contour = cv2.resize(contour, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
-        scrib = cv2.resize(scrib, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
-        cam = cv2.resize(cam, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
-        return image, label, contour,scrib,cam
+        pseudolabel = cv2.resize(pseudolabel, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
+        distancemaps = cv2.resize(distancemaps, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
+        distancemapc = cv2.resize(distancemapc, None, fx=scale_factor_x, fy=scale_factor_y, interpolation=cv2.INTER_NEAREST)
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class Crop(object):
@@ -157,7 +157,7 @@ class Crop(object):
         else:
             raise (RuntimeError("ignore_label should be an integer number\n"))
 
-    def __call__(self, image, label, contour,scrib,cam):
+    def __call__(self, image, label, pseudolabel,distancemaps,distancemapc):
         h, w = label.shape
         pad_h = max(self.crop_h - h, 0)
         pad_w = max(self.crop_w - w, 0)
@@ -168,9 +168,9 @@ class Crop(object):
                 raise (RuntimeError("segtransform.Crop() need padding while padding argument is None\n"))
             image = cv2.copyMakeBorder(image, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.padding)
             label = cv2.copyMakeBorder(label, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
-            contour = cv2.copyMakeBorder(contour, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
-            scrib = cv2.copyMakeBorder(scrib, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
-            cam = cv2.copyMakeBorder(cam, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
+            pseudolabel = cv2.copyMakeBorder(pseudolabel, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
+            distancemaps = cv2.copyMakeBorder(distancemaps, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
+            distancemapc = cv2.copyMakeBorder(distancemapc, pad_h_half, pad_h - pad_h_half, pad_w_half, pad_w - pad_w_half, cv2.BORDER_CONSTANT, value=self.ignore_label)
         h, w = label.shape
         if self.crop_type == 'rand':
             h_off = random.randint(0, h - self.crop_h)
@@ -180,10 +180,10 @@ class Crop(object):
             w_off = int((w - self.crop_w) / 2)
         image = image[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
         label = label[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
-        contour = contour[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
-        scrib = scrib[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
-        cam = cam[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
-        return image, label, contour,scrib,cam
+        pseudolabel = pseudolabel[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
+        distancemaps = distancemaps[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
+        distancemapc = distancemapc[h_off:h_off+self.crop_h, w_off:w_off+self.crop_w]
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class RandRotate(object):
@@ -204,66 +204,66 @@ class RandRotate(object):
         self.ignore_label = ignore_label
         self.p = p
 
-    def __call__(self, image, label,contour,scrib,cam):
+    def __call__(self, image, label,pseudolabel,distancemaps,distancemapc):
         if random.random() < self.p:
             angle = self.rotate[0] + (self.rotate[1] - self.rotate[0]) * random.random()
             h, w = label.shape
             matrix = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1)
             image = cv2.warpAffine(image, matrix, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=self.padding)
             label = cv2.warpAffine(label, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
-            contour = cv2.warpAffine(contour, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
-            scrib = cv2.warpAffine(scrib, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
-            cam = cv2.warpAffine(cam, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
-        return image, label,contour,scrib,cam
+            pseudolabel = cv2.warpAffine(pseudolabel, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
+            distancemaps = cv2.warpAffine(distancemaps, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
+            distancemapc = cv2.warpAffine(distancemapc, matrix, (w, h), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=self.ignore_label)
+        return image, label,pseudolabel,distancemaps,distancemapc
 
 
 class RandomHorizontalFlip(object):
     def __init__(self, p=0.5):
         self.p = p
 
-    def __call__(self, image, label,contour,scrib,cam):
+    def __call__(self, image, label,pseudolabel,distancemaps,distancemapc):
         if random.random() < self.p:
             image = cv2.flip(image, 1)
             label = cv2.flip(label, 1)
-            contour = cv2.flip(contour, 1)
-            scrib = cv2.flip(scrib, 1)
-            cam = cv2.flip(cam, 1)
-        return image, label, contour,scrib,cam
+            pseudolabel = cv2.flip(pseudolabel, 1)
+            distancemaps = cv2.flip(distancemaps, 1)
+            distancemapc = cv2.flip(distancemapc, 1)
+        return image, label, pseudolabel,distancemaps,distancemapc
 
 
 class RandomVerticalFlip(object):
     def __init__(self, p=0.5):
         self.p = p
 
-    def __call__(self, image, label,contour,scrib,cam):
+    def __call__(self, image, label,pseudolabel,distancemaps,distancemapc):
         if random.random() < self.p:
             image = cv2.flip(image, 0)
             label = cv2.flip(label, 0)
-            contour = cv2.flip(contour, 0)
-            scrib = cv2.flip(scrib, 0)
-            cam = cv2.flip(cam, 0)
-        return image, label,contour,scrib,cam
+            pseudolabel = cv2.flip(pseudolabel, 0)
+            distancemaps = cv2.flip(distancemaps, 0)
+            distancemapc = cv2.flip(distancemapc, 0)
+        return image, label,pseudolabel,distancemaps,distancemapc
 
 
 class RandomGaussianBlur(object):
     def __init__(self, radius=5):
         self.radius = radius
 
-    def __call__(self, image, label,contour,scrib,cam):
+    def __call__(self, image, label,pseudolabel,distancemaps,distancemapc):
         if random.random() < 0.5:
             image = cv2.GaussianBlur(image, (self.radius, self.radius), 0)
-        return image, label,contour,scrib,cam
+        return image, label,pseudolabel,distancemaps,distancemapc
 
 
 class RGB2BGR(object):
     # Converts image from RGB order to BGR order, for model initialized from Caffe
-    def __call__(self, image, label,contour):
+    def __call__(self, image, label,pseudolabel):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        return image, label,contour
+        return image, label,pseudolabel
 
 
 class BGR2RGB(object):
     # Converts image from BGR order to RGB order, for model initialized from Pytorch
-    def __call__(self, image, label,contour):
+    def __call__(self, image, label,pseudolabel):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return image, label,contour
+        return image, label,pseudolabel

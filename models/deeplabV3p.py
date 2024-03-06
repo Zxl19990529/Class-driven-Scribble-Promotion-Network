@@ -184,12 +184,12 @@ class Bottleneck(nn.Module):
         out = self.relu(out)
         return out
 
-class ResNet_CAMATT(nn.Module):
+class ResNet_lorm(nn.Module):
     def __init__(self, block, layers, num_classes,BatchNorm=nn.BatchNorm2d):
         self.inplanes = 64
         self.low_channels = 256
         self.high_channels = 2048
-        super(ResNet_CAMATT, self).__init__()
+        super(ResNet_lorm, self).__init__()
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = BatchNorm(64, affine = affine_par)
 
@@ -290,15 +290,15 @@ class ResNet_CAMATT(nn.Module):
 def Res_Deeplab(num_classes=21, layers=18):
     layers = int(layers)
     if layers == 18:
-        model = ResNet_CAMATT(BasicBlock, [2, 2, 2, 2], num_classes,SynchronizedBatchNorm2d)
+        model = ResNet_lorm(BasicBlock, [2, 2, 2, 2], num_classes,SynchronizedBatchNorm2d)
     elif layers == 34:
-        model = ResNet_CAMATT(BasicBlock, [3, 4, 6, 3], num_classes,SynchronizedBatchNorm2d)
+        model = ResNet_lorm(BasicBlock, [3, 4, 6, 3], num_classes,SynchronizedBatchNorm2d)
     elif layers == 50:
-        model = ResNet_CAMATT(Bottleneck, [3, 4, 6, 3], num_classes,SynchronizedBatchNorm2d)
+        model = ResNet_lorm(Bottleneck, [3, 4, 6, 3], num_classes,SynchronizedBatchNorm2d)
     elif layers == 101:
-        model = ResNet_CAMATT(Bottleneck, [3, 4, 23, 3], num_classes,SynchronizedBatchNorm2d)
+        model = ResNet_lorm(Bottleneck, [3, 4, 23, 3], num_classes,SynchronizedBatchNorm2d)
     elif layers == 152:
-        model = ResNet_CAMATT(Bottleneck, [3, 8, 36, 3], num_classes,SynchronizedBatchNorm2d)
+        model = ResNet_lorm(Bottleneck, [3, 8, 36, 3], num_classes,SynchronizedBatchNorm2d)
     else:
         print('unsupport layer number: []'.format(layers))
         exit()

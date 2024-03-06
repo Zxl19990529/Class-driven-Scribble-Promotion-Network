@@ -11,7 +11,7 @@ from tqdm import tqdm
 import time
 import cv2,argparse
 
-from models import res50_ASPP_MLP,res50_ASPP_CAMATT,res50_deeplabV3_CAMATT
+from models import res50_ASPP_MLP,res50_ASPP_lorm,res50_deeplabV3_lorm
 
 import basic_function as func
 import dataset
@@ -31,7 +31,7 @@ parser.add_argument('--batchsize', default=1, type=int, metavar='BATCH_SIZE', he
 parser.add_argument('--epochs', default=50, type=int, metavar='EPOCH',help='number of total epochs to run')
 parser.add_argument('--model_path', default= 'None' ,help='pretrain model path')
 # val param
-parser.add_argument('--model_type',default='res50_CAMATT',type=str,help='Model type selection. nonRW|RW|res50_cam|res50_labelFusion')
+parser.add_argument('--model_type',default='res50_lorm',type=str,help='Model type selection. nonRW|RW|res50_cam|res50_labelFusion')
 parser.add_argument('--checkpoint_path', metavar='CHECKPOINT_PATH', help='path to the checkpoint file',default='log/train_deeplabv2_r50/last_checkpoint.pth')
 parser.add_argument('--save_path', default='eval_results', metavar='SAVE_PATH', help='path to save the visualizations')
 
@@ -63,10 +63,10 @@ def net_process(args, model, image, mean, std=None, flip=False):
     if flip:
         input = torch.cat([input, input.flip(3)], 0)
     with torch.no_grad():
-        if args.model_type == 'res50_CAMATT':
+        if args.model_type == 'res50_lorm':
             print(input.shape)
             output = model.forward_eval(input)
-        elif args.model_type == 'res50_deeplabv3_camatt':
+        elif args.model_type == 'res50_deeplabv3_lorm':
             output = model.forward_eval(input)
         else:
             output, output_clas = model(input)
@@ -195,10 +195,10 @@ if __name__ == '__main__':
     
     if model_type == 'res50_cam':
         model = res50_ASPP_MLP.Res_DeeplabMLP(args.numclasses,args.layers)
-    elif model_type == 'res50_CAMATT':
-        model = res50_ASPP_CAMATT.Res_Deeplab(args.numclasses,args.layers)
-    elif args.model_type == 'res50_deeplabv3_camatt':
-        model = res50_deeplabV3_CAMATT.Res_Deeplab(args.numclasses,args.layers)
+    elif model_type == 'res50_lorm':
+        model = res50_ASPP_lorm.Res_Deeplab(args.numclasses,args.layers)
+    elif args.model_type == 'res50_deeplabv3_lorm':
+        model = res50_deeplabV3_lorm.Res_Deeplab(args.numclasses,args.layers)
     model_pretrain = torch.load ( args.checkpoint_path )
     # model = func.param_restore_all ( model, model_pretrain['state_dict'] )
     model.load_state_dict(model_pretrain['state_dict'])
