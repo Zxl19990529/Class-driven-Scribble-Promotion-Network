@@ -39,13 +39,13 @@ def get_dataloader(args,distributed):
             transform_exten.ToTensor(),
             transform_exten.Normalize(mean=mean, std=std)])
     train_transform_base = transform.Compose([
-            transform_exten.RandScale([0.5, 2.0]),
-            transform_exten.RandRotate([-10, 10], padding=mean, ignore_label=255),
-            transform_exten.RandomGaussianBlur(),
-            transform_exten.RandomHorizontalFlip(),
-            transform_exten.Crop([465, 465], crop_type='rand', padding=mean, ignore_label=255),
-            transform_exten.ToTensor(),
-            transform_exten.Normalize(mean=mean, std=std)])
+            transform.RandScale([0.5, 2.0]),
+            transform.RandRotate([-10, 10], padding=mean, ignore_label=255),
+            transform.RandomGaussianBlur(),
+            transform.RandomHorizontalFlip(),
+            transform.Crop([465, 465], crop_type='rand', padding=mean, ignore_label=255),
+            transform.ToTensor(),
+            transform.Normalize(mean=mean, std=std)])
     val_transform = transform.Compose([
         transform.Crop([465, 465], crop_type='center', padding=mean, ignore_label=255),
         transform.ToTensor(),
