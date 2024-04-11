@@ -9,10 +9,10 @@ CUDA_VISIBLE_DEVICES=0 python ./train.py \
 --distance_map_pseudo distance_pseudo \
 --l_seg 1 \
 --l_pesudo 1 \
---l_CAMATT 1 \
+--l_lorm 1 \
 --label_smooth 0.1 \
---distanceScrib_entropy 1 \
---distanceCAM_entropy 1 \
+--l_ds 1 \
+--l_dc 1 \
 --labelFusion_entropy 0 \
 --numclasses 21 \
 --workers 6 \
