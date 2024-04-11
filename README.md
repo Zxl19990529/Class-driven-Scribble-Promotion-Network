@@ -26,7 +26,7 @@ Run the example script:
 ```sh
 sh scripts/train_r50_deeplabv2.sh
 ```  
-Not avaliable for now, the complete dataset with distance maps and pseudo-label will be avaliable upon paper acceptance.
+The distance maps and pseudo-label will be avaliable soon.
 ### Eval
 Download the pretrained checkpoint from [dropbox](https://www.dropbox.com/scl/fi/4eki9ioib3pj4g60hu6hq/train_deeplabv2_r50.zip?rlkey=qtep6d4r9ctoawxnqk0w0porw&dl=0) or [googledrive](https://drive.google.com/file/d/1EBHTmvRaYkCJKcmN26HgiBzJ6LJFZLay/view?usp=sharing), and move the checkpoint to the ```log```  folder,
 Run the example script:  
