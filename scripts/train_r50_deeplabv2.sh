@@ -5,8 +5,8 @@ CUDA_VISIBLE_DEVICES=0 python ./train.py \
 --dataset_path dataset/SBD_leige \
 --dataset SBD_pesudo_distancemap \
 --train_path pascal_2012_scribble \
---distance_map_Scrib distance_map \
---distance_map_pseudo distance_pseudo \
+--distancemap_s distance_map \
+--distancemap_c distance_pseudo \
 --l_seg 1 \
 --l_pesudo 1 \
 --l_lorm 1 \
