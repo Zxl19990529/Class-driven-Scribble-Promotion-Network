@@ -3,7 +3,7 @@ import torch.distributed as dist
 from torch.utils.data import DistributedSampler,DataLoader
 from torch.nn.parallel import DistributedDataParallel
 import numpy as np
-from models import deeplabV3_lorm, deeplabV3p,deeplabV2
+from models import deeplabV3_lorm, deeplabV3p,deeplabV2,res50_ASPP_lorm
 import dataset
 import transform as transform
 import transform_exten
@@ -16,7 +16,8 @@ def get_model(model_type,distributed,args,local_rank,device):
         model = deeplabV2.Res_Deeplab(args.numclasses,args.layers)
     elif model_type == 'deeplabv3p_lorm':
         model = deeplabV3_lorm.Res_Deeplab(args.numclasses,args.layers)
-
+    elif model_type == 'res50_ASPP_lorm':
+        model = res50_ASPP_lorm.ResNet_CAMATT(args.numclasses,args.layers)
     model = model.to(device)
     if distributed:
         model = DistributedDataParallel(model,device_ids=[local_rank])
