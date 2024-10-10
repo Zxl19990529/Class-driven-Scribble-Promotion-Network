@@ -59,6 +59,29 @@ sh scripts/emlc_r50_deeplabv2.sh
 The visualization reults will be saved in emlc_r50_deeplabv2, and the quantity results will be saved in the ```.txt``` file.
 ### Demo
 Open the ```demo.ipynb``` with jupyter notebook, and follow the commands.
-
+### Quantization results
+| Method      | pub        | supervision | segmentor  | backbone | performance |
+| :---------- | :--------- | :---------- | :--------- | :------- | :---------- |
+| SEAM        | 20CVPR     | I           | deeplab    | res38    | 64\.50%     |
+| AFA         | 22CVPR     | I           | segFormer  | MiT-B1   | 66\.00%     |
+| BMP         | 23ICCV     | I           | BMP        | MiT-B1   | 68\.10%     |
+| ScribbleSup | 2016CVPR   | S           | deeplab    | vgg16    | 63\.10%     |
+| RAWKS       | 2017CVPR   | S           | deeplab    | res101   | 61\.40%     |
+| KCL         | 2018ECCV   | S           | deeplabv2  | res101   | 72\.90%     |
+| NCL         | 2018CVPR   | S           | deeplab    | res101   | 72\.80%     |
+| BPG         | 19IJCAI    | S           | deeplabv2  | res101   | 73\.20%     |
+| URSS        | 21ICCV     | S           | deeplabv2  | res101   | 74\.60%     |
+| PSI         | 21ICCV     | S           | deeplabv3p | res101   | 74\.90%     |
+| CCL         | 22ACM-HCMA | S           | deeplabv2  | res101   | 74\.40%     |
+| PCE         | 22NPL      | S           | deeplabv3p | res101   | 73\.80%     |
+| TEL         | 22CVPR     | S           | deeplabv3p | res101   | 75\.23%     |
+| AGMM        | 23CVPR     | S           | deeplabv3p | res101   | 74\.24%     |
+| Ours(BMP)   | 24AAAI     | S           | deeplabv3p | res101   | **75\.85%** |
+| Ours（BMP） | 24AAAI     | S           | deeplabv2  | res101   | 75\.25%     |
+| Ours（BMP） | 24AAAI     | S           | deeplabv2  | res50    | 73\.92%     |
+| Ours(SEAM)  | 24AAAI     | S           | deeplabv3p | res101   | 71\.77%     |
+| Ours(AFA)   | 24AAAI     | S           | deeplabv3p | res101   | 73\.31%     |
+| Deeplabv3p  |            | F           | deeplabv3p | res101   | **78\.14%** |
+| Deeplabv3p  |            | F           | deeplabv3p | r50      | 75\.88%     |
 ### Thanks
 This repo is inspired by [URSS](https://github.com/panzhiyi/URSS)
