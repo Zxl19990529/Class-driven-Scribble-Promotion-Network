@@ -60,6 +60,7 @@ The visualization reults will be saved in emlc_r50_deeplabv2, and the quantity r
 ### Demo
 Open the ```demo.ipynb``` with jupyter notebook, and follow the commands.
 ### Quantization results
+The original paper retained only one decimal place in the tables for easier formatting.
 | Method      | pub        | supervision | segmentor  | backbone | performance |
 | :---------- | :--------- | :---------- | :--------- | :------- | :---------- |
 | SEAM        | 20CVPR     | I           | deeplab    | res38    | 64\.50%     |
